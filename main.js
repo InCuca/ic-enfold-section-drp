@@ -1,15 +1,29 @@
 function createResizeHandler(tabSection) {
     const drp = tabSection.querySelector('.av-tab-section-dropdown-container');
     const tabs = tabSection.querySelector('.av-tab-section-tab-title-container');
+    const tabCmpTitles = tabSection.querySelectorAll('.av_tab_section .tab, .tab_titles .tab');
+
     const alwaysDropdown = tabSection.classList.contains('dropdown-on-desktop');
     function setDropdown() {
         drp.style.display = 'block';
-        tabs.style.display = 'none';
+        if(tabs) tabs.style.display = 'none';
+        if (tabCmpTitles) {
+            Array.prototype.forEach.call(
+                tabCmpTitles,
+                tabTitle => tabTitle.style.display = 'none'
+            );
+        }
     }
 
     function setTabs() {
         drp.style.display = 'none';
-        tabs.style.display = 'block';
+        if(tabs) tabs.style.display = 'block';
+        if (tabCmpTitles) {
+            Array.prototype.forEach.call(
+                tabCmpTitles,
+                tabTitle => delete tabTitle.style.display
+            );
+        }
     }
 
     return function () {
@@ -31,7 +45,11 @@ function addDropdownListeners(tabSection) {
     const select = tabSection.querySelector('.av-tab-section-dropdown-container select');
     select.addEventListener('change', function (event) {
         const [value] = event.target.value;
-        const query = '.av-section-tab-title[data-av-tab-section-title="' + value + '"]';
+        const query = `
+        .av-section-tab-title[data-av-tab-section-title="${value}"],
+        .av_tab_section .tab[data-fake-id="#tab-id-${value}"]
+        `;
+        
         const targetTab = tabSection.querySelector(query);
         targetTab.click();
     })
@@ -62,21 +80,34 @@ function attachDropdown(tabSection) {
 
     function attachOption(tab) {
         const option = document.createElement('option');
-        option.value = tab.dataset.avTabSectionTitle;
-        option.innerHTML = tab.querySelector('.av-inner-tab-title').innerText;
-        if (tab.classList.contains('av-active-tab-title')) {
+        option.value = (
+            tab.dataset.avTabSectionTitle ||
+            tab.querySelector('.tab').dataset.fakeId.replace('#tab-id-', '')
+        );
+        option.innerHTML = tab.querySelector('.av-inner-tab-title, .tab').innerText;
+        if (
+            tab.classList.contains('av-active-tab-title') ||
+            tab.classList.contains('active_tab')
+        ) {
             option.setAttribute('selected', 'selected');
         }
         select.appendChild(option);
     }
-    const tabs = tabSection.querySelectorAll('.av-section-tab-title');
+    const tabs = tabSection.querySelectorAll('.av-section-tab-title, .av_tab_section');
     const select = document.createElement('select');
     Array.prototype.forEach.call(tabs, attachOption);
     drp.appendChild(select);
 
     const outerCont = tabSection.querySelector('.av-tab-section-outer-container');
-    const innerCont = outerCont.querySelector('.av-tab-section-inner-container');
-    outerCont.insertBefore(drp, innerCont);
+    if (outerCont) {
+        // is section tab component
+        const innerCont = outerCont.querySelector('.av-tab-section-inner-container');
+        outerCont.insertBefore(drp, innerCont);
+    } else {
+        // is tab component
+        const tabTitles = tabSection.querySelector('.tab_titles');
+        tabSection.insertBefore(drp, tabTitles);
+    }
 }
 
 /* This script transorms .av-tab-section tabs into dropdown selector */
