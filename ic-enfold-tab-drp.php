@@ -6,7 +6,7 @@
  * Author:          INCUCA
  * Author URI:      https://incuca.net
  * Text Domain:     ic-enfold-tab-drp
- * Version:         0.2.1
+ * Version:         0.2.2
  *
  * @package         Ic_Enfold
  */

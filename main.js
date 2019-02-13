@@ -5,8 +5,8 @@ function createResizeHandler(tabSection) {
 
     const alwaysDropdown = tabSection.classList.contains('dropdown-on-desktop');
     function setDropdown() {
-        drp.style.display = 'block';
-        if(tabs) tabs.style.display = 'none';
+        drp.style.removeProperty('display');
+        if (tabs) tabs.style.display = 'none';
         if (tabCmpTitles) {
             Array.prototype.forEach.call(
                 tabCmpTitles,
@@ -17,11 +17,11 @@ function createResizeHandler(tabSection) {
 
     function setTabs() {
         drp.style.display = 'none';
-        if(tabs) tabs.style.display = 'block';
+        if (tabs) tabs.style.removeProperty('display');
         if (tabCmpTitles) {
             Array.prototype.forEach.call(
                 tabCmpTitles,
-                tabTitle => delete tabTitle.style.display
+                tabTitle => tabTitle.style.removeProperty('display'),
             );
         }
     }
@@ -49,7 +49,7 @@ function addDropdownListeners(tabSection) {
         .av-section-tab-title[data-av-tab-section-title="${value}"],
         .av_tab_section .tab[data-fake-id="#tab-id-${value}"]
         `;
-        
+
         const targetTab = tabSection.querySelector(query);
         targetTab.click();
     })
