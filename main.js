@@ -36,6 +36,7 @@ function createResizeHandler(tabSection) {
 }
 
 function addResizeListeners(tabSection) {
+    tabSection.style.display = 'block';
     const resizeHandler = createResizeHandler(tabSection);
     window.addEventListener('resize', resizeHandler);
     resizeHandler();
